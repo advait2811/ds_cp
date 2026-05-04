@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cricket Stats — Live Match Analyser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────────────────────────── -->
+<header>
+  <div class="logo">
+    CricketStats
+    <span>Advanced DSA · 9 Algorithms</span>
+  </div>
+  <div id="matchBadge" class="match-badge">IND vs AUS · T20</div>
+</header>
+
+<!-- ── MAIN ───────────────────────────────────────────────────── -->
+<div class="container">
+
+  <!-- Result Banner -->
+  <div id="resultBanner" class="result-banner">
+    <div class="result-title" id="resultTitle">Match Over</div>
+    <div class="result-sub" id="resultSub"></div>
+  </div>
+<div id="hash-grid" style="display:none"></div>
+<div id="hash-stats" style="display:none"></div>
+<div id="interval-spell-list" style="display:none"></div>
+  <!-- Score Hero -->
+  <div class="score-hero">
+    <div class="score-teams">
+      <div class="team-block">
+        <div class="team-name">India</div>
+        <div class="team-score" id="ind-score">0/0</div>
+        <div class="team-overs" id="ind-overs">(0.0 ov)</div>
+      </div>
+      <div class="vs">vs</div>
+      <div class="team-block">
+        <div class="team-name">Australia</div>
+        <div class="team-score" id="aus-score">—</div>
+        <div class="team-overs" id="aus-overs"></div>
+      </div>
+    </div>
+    <div class="score-meta">
+      <div class="meta-item">
+        <span class="meta-label">Run Rate</span>
+        <span class="meta-value highlight" id="rr">0.00</span>
+      </div>
+      <div class="meta-item" id="rrrItem" style="display:none">
+        <span class="meta-label">Req. Rate</span>
+        <span class="meta-value danger" id="rrr">—</span>
+      </div>
+      <div class="meta-item" id="targetItem" style="display:none">
+        <span class="meta-label">Target</span>
+        <span class="meta-value" id="target">—</span>
+      </div>
+      <div class="meta-item" id="needItem" style="display:none">
+        <span class="meta-label">Need</span>
+        <span class="meta-value" id="need">—</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Innings</span>
+        <span class="meta-value" id="inningsLabel">1st · India bat</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Status</span>
+        <span class="pill pill-live" id="statusPill"><span class="live-dot"></span> Live</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Simulate Controls -->
+  <div class="controls">
+    <label style="font-family:var(--mono);font-size:12px;color:var(--text-muted)">Simulate</label>
+    <input id="oversInput" class="overs-input" type="number" value="1" min="1" max="20">
+    <label style="font-family:var(--mono);font-size:12px;color:var(--text-muted)">overs</label>
+    <button class="btn btn-primary" onclick="simulateOvers()">▶ Run</button>
+    <button class="btn" onclick="simulateOvers(20)" title="Simulate remaining innings">⏭ Full Innings</button>
+    <button class="btn btn-danger" onclick="resetMatch()" title="Restart">↺ Reset</button>
+    <span id="inningsBadge" class="innings-label">Innings 1</span>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 1 — SCORECARD + COMMENTARY
+  ════════════════════════════════════════════════════════════ -->
+  <div class="section-heading">Scorecard</div>
+
+  <div class="grid-2" style="margin-bottom:20px">
+
+    <!-- Batting -->
+    <div class="card">
+      <div class="card-title">Batting Scorecard</div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('bat','ind-bat')">India</button>
+        <button class="tab-btn" onclick="switchTab('bat','aus-bat')">Australia</button>
+      </div>
+
+      <div id="ind-bat" class="tab-panel active">
+        <table class="score-table">
+          <thead><tr><th>Batsman</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead>
+          <tbody id="ind-bat-body"></tbody>
+        </table>
+        <div id="ind-extras" style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:8px"></div>
+      </div>
+
+      <div id="aus-bat" class="tab-panel">
+        <table class="score-table">
+          <thead><tr><th>Batsman</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead>
+          <tbody id="aus-bat-body"></tbody>
+        </table>
+        <div id="aus-extras" style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:8px"></div>
+      </div>
+    </div>
+
+    <!-- Bowling & Commentary -->
+    <div class="card">
+      <div class="card-title">Bowling & Ball-by-Ball</div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('view','bowling-view')">Bowling</button>
+        <button class="tab-btn" onclick="switchTab('view','commentary-view')">Commentary</button>
+      </div>
+
+      <div id="bowling-view" class="tab-panel active">
+        <table class="score-table">
+          <thead><tr><th>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Econ</th></tr></thead>
+          <tbody id="bowl-body"></tbody>
+        </table>
+      </div>
+
+      <div id="commentary-view" class="tab-panel">
+        <div class="commentary-feed" id="commentaryFeed"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 2 — ALGORITHMS 2, 3, 4, 5 (Range / Search)
+  ════════════════════════════════════════════════════════════ -->
+  <div class="section-heading">Algorithm Analysis — Range &amp; Search</div>
+
+  <div class="grid-2" style="margin-bottom:16px">
+
+    <!-- Alg 2: Segment Tree -->
+    <div class="card">
+      <div class="card-title">
+        Runs by Over Range
+        <span class="algo-tag">Alg 2 · Segment Tree</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input id="seg-from" class="algo-input" type="number" placeholder="From over" min="1" max="20" value="1" style="margin:0">
+        <input id="seg-to"   class="algo-input" type="number" placeholder="To over"   min="1" max="20" value="6"  style="margin:0">
+      </div>
+      <button class="btn" style="width:100%;margin-bottom:10px" onclick="runSegTree()">Query Range</button>
+      <div class="algo-result" id="seg-result">Enter a range and click Query.</div>
+      <div id="seg-chart" class="bar-chart" style="margin-top:10px"></div>
+    </div>
+
+    <!-- Alg 3: Fenwick Tree -->
+    <div class="card">
+      <div class="card-title">
+        Run Rate History
+        <span class="algo-tag">Alg 3 · Fenwick Tree</span>
+      </div>
+      <input id="fenwick-over" class="algo-input" type="number" placeholder="After over..." min="1" max="20" value="6">
+      <button class="btn" style="width:100%;margin-bottom:10px" onclick="runFenwick()">Calculate</button>
+      <div class="algo-result" id="fenwick-result">Enter an over number and click Calculate.</div>
+    </div>
+
+  </div>
+
+  <div class="grid-2" style="margin-bottom:16px">
+
+    <!-- Alg 4: Trie -->
+    <div class="card">
+      <div class="card-title">
+        Player Search
+        <span class="algo-tag">Alg 4 · Trie</span>
+      </div>
+      <input id="trie-input" class="algo-input" type="text"
+        placeholder="Type name prefix… e.g. ro, vi, ja" oninput="runTrie()">
+      <div id="trie-result" class="algo-result" style="min-height:80px">Start typing to search players.</div>
+    </div>
+
+    <!-- Alg 5: KMP -->
+    <div class="card">
+      <div class="card-title">
+        Commentary Search
+        <span class="algo-tag">Alg 5 · KMP String Match</span>
+      </div>
+      <input id="kmp-input" class="algo-input" type="text" placeholder="e.g. WICKET, SIX, Bumrah">
+      <button class="btn" style="width:100%;margin-bottom:10px" onclick="runKMP()">Search</button>
+      <div class="algo-result" id="kmp-result" style="max-height:160px;overflow-y:auto">Run a search to see results.</div>
+    </div>
+
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 3 — ALGORITHMS 6 & 7 (Partnership Graph — compact)
+  ════════════════════════════════════════════════════════════ -->
+  <div class="section-heading">Algorithm Analysis — Partnership Graph</div>
+
+  <div class="grid-2" style="margin-bottom:16px">
+
+    <!-- Alg 6: Dijkstra -->
+    <div class="card">
+      <div class="card-title">
+        Strongest Partnership Chain
+        <span class="algo-tag">Alg 6 · Dijkstra</span>
+      </div>
+      <input id="dijk-a" class="algo-input" type="text" placeholder="Player A ID  e.g. ind_rohit">
+      <input id="dijk-b" class="algo-input" type="text" placeholder="Player B ID  e.g. ind_kohli">
+      <button class="btn" style="width:100%;margin-bottom:10px" onclick="runDijkstra()">Find Chain</button>
+      <div class="algo-result" id="dijk-result">Enter two player IDs and click Find Chain.</div>
+      <div class="notice" id="dijk-ids" style="margin-top:8px"></div>
+    </div>
+
+    <!-- Alg 7: BFS + DFS -->
+    <div class="card">
+      <div class="card-title">
+        Partnership Network Traversal
+        <span class="algo-tag">Alg 7 · BFS + DFS</span>
+      </div>
+      <input id="bfs-input" class="algo-input" type="text" placeholder="Player ID for BFS  e.g. ind_rohit">
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <button class="btn" style="flex:1" onclick="runBFS()">BFS Partners</button>
+        <button class="btn" style="flex:1" onclick="runDFS()">DFS Clusters</button>
+      </div>
+      <div class="algo-result" id="bfs-result" style="max-height:160px;overflow-y:auto">Run BFS or DFS to see results.</div>
+    </div>
+
+  </div>
+
+  <!-- Partnership list (compact) -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">All Partnerships Recorded <span class="algo-tag">Graph edges</span></div>
+    <div id="partnership-list" class="partnership-list"></div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 4 — ALGORITHM 10: INTERVAL TREE
+  ════════════════════════════════════════════════════════════ -->
+  <div class="section-heading">Algorithm Analysis — Interval Tree</div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">
+      Who Was Batting? (Stabbing Query)
+      <span class="algo-tag">Alg 10 · Interval Tree</span>
+    </div>
+    <p style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-bottom:10px;line-height:1.6">
+      Each batsman's spell is stored as an interval [entry over, dismissal over] in an augmented BST. To answer "who was batting at over X?", the tree prunes entire branches using the stored <em>maxEnd</em> value — no need to check every spell. Complexity: O(log n + k).
+    </p>
+    <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+      <input id="interval-over" class="algo-input" type="number" placeholder="Over no." min="1" max="20" value="5" style="width:100px;margin:0">
+      <button class="btn" onclick="runIntervalQuery()">Query Over</button>
+    </div>
+    <div class="algo-result" id="interval-result">Enter an over and click Query.</div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 5 — ALGORITHM 8: AVL TREE LEADERBOARD (new)
+  ════════════════════════════════════════════════════════════ -->
+  <div class="section-heading">Algorithm Analysis — AVL Tree Leaderboard</div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">
+      Top Scorers
+      <span class="algo-tag">Alg 8 · AVL Self-Balancing BST</span>
+    </div>
+    <p style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-bottom:12px;line-height:1.6">
+      Every stat update inserts the player's new score into the AVL tree in O(log n). The tree auto-balances using rotations, keeping in-order traversal always sorted. No re-sort needed after each ball.
+    </p>
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Player</th>
+          <th>Team</th>
+          <th>Runs(Balls)</th>
+          <th>SR</th>
+        </tr>
+      </thead>
+      <tbody id="avl-leaderboard"></tbody>
+    </table>
+  </div>
+
+
+
+
+</div><!-- /container -->
+
+<script src="algorithms.js"></script>
+<script src="simulation.js"></script>
+<script src="render.js"></script>
+<script>
+  // Bootstrap
+  initState();
+</script>
+
+</body>
+</html>
