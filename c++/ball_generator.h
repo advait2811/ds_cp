@@ -114,14 +114,6 @@ public:
             dotChance    += 0.03;
             sixChance    -= 0.02;
         }
-
-        if (isChasing && targetRunRate > 10.0) {
-            sixChance    += 0.05;
-            fourChance   += 0.03;
-            dotChance    -= 0.04;
-            wicketChance += 0.03;
-        }
-
         if (isFastBowler) {
             wicketChance += 0.02;
             dotChance    += 0.02;

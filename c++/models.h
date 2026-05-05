@@ -7,7 +7,7 @@ using namespace std;
 // ================================================================
 enum class Role { BATSMAN, BOWLER, ALLROUNDER, WICKETKEEPER };
 
-string roleToString(Role r) {
+inline string roleToString(Role r) {
     if (r == Role::BATSMAN)      return "BAT";
     if (r == Role::BOWLER)       return "BWL";
     if (r == Role::ALLROUNDER)   return "ALL";

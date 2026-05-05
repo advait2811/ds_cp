@@ -103,20 +103,29 @@ function renderBattingCard(teamId, order, tbodyId, extrasId) {
 
 // ── BOWLING CARD ──────────────────────────────────────────────
 function renderBowlingCard() {
-  const tbody   = document.getElementById('bowl-body');
-  const bowlers = state.innings === 1 ? AUS_BOWLERS : IND_BOWLERS;
+  const tbody = document.getElementById('bowl-body');
   tbody.innerHTML = '';
 
-  for (const id of bowlers) {
-    const b = state.bowl[id];
-    if (b.overs === 0 && b.balls === 0) continue;
-    const econ = (b.overs + b.balls/6) > 0 ? (b.runs / (b.overs + b.balls/6)).toFixed(2) : '—';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${PLAYERS[id].name}</td>
-      <td>${b.overs}.${b.balls}</td><td>${b.maidens}</td><td>${b.runs}</td><td>${b.wickets}</td><td>${econ}</td>
-    `;
-    tbody.appendChild(tr);
+  // Show inn-1 bowlers (AUS) first, then inn-2 bowlers (IND) once they've bowled
+  const allBowlerGroups = state.innings === 1
+    ? [AUS_BOWLERS]
+    : [AUS_BOWLERS, IND_BOWLERS];
+
+  for (const group of allBowlerGroups) {
+    for (const id of group) {
+      const b = state.bowl[id];
+      if (b.overs === 0 && b.balls === 0) continue;
+      const econ = (b.overs + b.balls / 6) > 0
+        ? (b.runs / (b.overs + b.balls / 6)).toFixed(2)
+        : '—';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${PLAYERS[id].name}</td>
+        <td>${b.overs}.${b.balls}</td><td>${b.maidens}</td>
+        <td>${b.runs}</td><td>${b.wickets}</td><td>${econ}</td>
+      `;
+      tbody.appendChild(tr);
+    }
   }
 }
 

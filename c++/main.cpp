@@ -38,21 +38,24 @@ Team buildAustralia() {
 }
 void showMenu() {
     cout << "\n";
-    cout << "  ╔══════════════════════════════════════════╗\n";
-    cout << "  ║        ANALYSIS MENU                     ║\n";
-    cout << "  ╠══════════════════════════════════════════╣\n";
-    cout << "  ║  1. Show live scorecard                  ║\n";
-    cout << "  ║  2. Simulate next over(s)                ║\n";
-    cout << "  ║  3. [Seg Tree]  Runs in over range       ║\n";
-    cout << "  ║  4. [Fenwick]   Run rate at over X       ║\n";
-    cout << "  ║  5. [Trie]      Search player by prefix  ║\n";
-    cout << "  ║  6. [KMP]       Search commentary        ║\n";
-    cout << "  ║  7. [Dijkstra]  Partnership chain        ║\n";
-    cout << "  ║  8. [BFS]       Find all partners        ║\n";
-    cout << "  ║  9. [DFS]       Batting clusters         ║\n";
-    cout << "  ║  10. Show partnership network            ║\n";
-    cout << "  ║  0. Exit                                 ║\n";
-    cout << "  ╚══════════════════════════════════════════╝\n";
+    cout << "  |----------------------------------------------|\n";
+    cout << "  |        ANALYSIS MENU                         |\n";
+    cout << "  |----------------------------------------------|\n";
+    cout << "  |  1.  Show live scorecard                     |\n";
+    cout << "  |  2.  Simulate next over(s)                   |\n";
+    cout << "  |  3.  [Seg Tree]   Runs in over range         |\n";
+    cout << "  |  4.  [Fenwick]    Run rate at over X         |\n";
+    cout << "  |  5.  [Trie]       Search player by prefix    |\n";
+    cout << "  |  6.  [KMP]        Search commentary          |\n";
+    cout << "  |  7.  [Dijkstra]   Partnership chain          |\n";
+    cout << "  |  8.  [BFS]        Find all partners          |\n";
+    cout << "  |  9.  [DFS]        Batting clusters           |\n";
+    cout << "  |  10. Show partnership network                |\n";
+    cout << "  |  11. [AVL Tree]   Batting leaderboard        |\n";
+    cout << "  |  12. [Hash Table] Player stat lookup         |\n";
+    cout << "  |  13. [Interval Tree] Who batted at over X?   |\n";
+    cout << "  |  0.  Exit                                    |\n";
+    cout << "  |----------------------------------------------|\n";
     cout << "  Choice: ";
 }
 
@@ -72,28 +75,20 @@ void runMenu(MatchEngine& engine) {
             engine.printDashboard();
 
         } else if (choice == 2) {
-            // Check if we need to move to innings 2
-            if (engine.isInningsOneOver() && engine.getInningsNumber() == 1) {
-                engine.startInningsTwo();
-            }
-
             if (engine.isMatchOver()) {
                 cout << "\n  Match is already over!\n";
                 engine.printResult();
-                break;
+                continue;
             }
 
             cout << "  How many overs to simulate? ";
             int n;
             cin >> n;
-            if (n < 1) { n = 1; }
-            if (n > 20 ) { n = 20; }
+            if (n < 1)  { n = 1;  }
+            if (n > 40) { n = 40; }   // allow up to 40 so a full match can run in one go
 
             engine.simulateNextOvers(n);
 
-            if (engine.isInningsOneOver() && engine.getInningsNumber() == 1) {
-                cout << "\n  Innings 1 is complete. Choose option 2 again to start Innings 2.\n";
-            }
             if (engine.isMatchOver()) {
                 engine.printFinalScorecard();
                 engine.printResult();
@@ -144,6 +139,21 @@ void runMenu(MatchEngine& engine) {
         } else if (choice == 10) {
             engine.printPartnershipNetwork();
 
+        } else if (choice == 11) {
+            engine.printLeaderboard();
+
+        } else if (choice == 12) {
+            cout << "  Enter player ID (e.g. ind_rohit): ";
+            string pid;
+            cin >> pid;
+            engine.lookupPlayerStats(pid);
+
+        } else if (choice == 13) {
+            cout << "  Enter over number to query: ";
+            int ov;
+            cin >> ov;
+            engine.queryBattingAtOver(ov);
+
         } else {
             cout << "  Invalid choice. Please try again.\n";
         }
@@ -157,20 +167,23 @@ void runMenu(MatchEngine& engine) {
 
 int main() {
     cout << "\n";
-    cout << "  ╔════════════════════════════════════════════════════════╗\n";
-    cout << "  ║     LIVE CRICKET STATISTICS UPDATER                   ║\n";
-    cout << "  ║     Advanced Data Structures — Course Project         ║\n";
-    cout << "  ║     India vs Australia — T20 International            ║\n";
-    cout << "  ║                                                        ║\n";
-    cout << "  ║  Algorithms used:                                      ║\n";
-    cout << "  ║    1. Min-Heap  — Ball event ordering                 ║\n";
-    cout << "  ║    2. Segment Tree — Over range run queries           ║\n";
-    cout << "  ║    3. Fenwick Tree — Prefix run rate calculations     ║\n";
-    cout << "  ║    4. Trie       — Player name autocomplete           ║\n";
-    cout << "  ║    5. KMP        — Commentary keyword search          ║\n";
-    cout << "  ║    6. Dijkstra   — Strongest partnership chain        ║\n";
-    cout << "  ║    7. BFS + DFS  — Partnership network analysis       ║\n";
-    cout << "  ╚════════════════════════════════════════════════════════╝\n\n";
+    cout << "  |-------------------------------------------------------|\n";
+    cout << "  |     LIVE CRICKET STATISTICS UPDATER                   |\n";
+    cout << "  |     Advanced Data Structures — Course Project        |\n";
+    cout << "  |     India vs Australia — T20 International           |\n";
+    cout << "  |                                                       |\n";
+    cout << "  |  Algorithms used:                                     |\n";
+    cout << "  |    1.  Min-Heap      - Ball event ordering            |\n";
+    cout << "  |    2.  Segment Tree  - Over range run queries         |\n";
+    cout << "  |    3.  Fenwick Tree  - Prefix run rate calculations   |\n";
+    cout << "  |    4.  Trie          - Player name autocomplete       |\n";
+    cout << "  |    5.  KMP           - Commentary keyword search      |\n";
+    cout << "  |    6.  Dijkstra      - Strongest partnership chain    |\n";
+    cout << "  |    7.  BFS + DFS     - Partnership network analysis   |\n";
+    cout << "  |    8.  AVL Tree      - Self-balancing leaderboard     |\n";
+    cout << "  |    9.  Hash Table    - O(1) player stat cache         |\n";
+    cout << "  |    10. Interval Tree - Batting spell queries          |\n";
+    cout << "  |-------------------------------------------------------|\n\n";
 
     Team india     = buildIndia();
     Team australia = buildAustralia();

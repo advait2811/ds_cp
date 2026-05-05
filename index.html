@@ -14,7 +14,7 @@
 <header>
   <div class="logo">
     CricketStats
-    <span>Advanced DSA · 9 Algorithms</span>
+    <span>Advanced DSA · 10 Algorithms</span>
   </div>
   <div id="matchBadge" class="match-badge">IND vs AUS · T20</div>
 </header>
@@ -27,8 +27,7 @@
     <div class="result-title" id="resultTitle">Match Over</div>
     <div class="result-sub" id="resultSub"></div>
   </div>
-<div id="hash-grid" style="display:none"></div>
-<div id="hash-stats" style="display:none"></div>
+
 <div id="interval-spell-list" style="display:none"></div>
   <!-- Score Hero -->
   <div class="score-hero">
@@ -242,7 +241,25 @@
     <div id="partnership-list" class="partnership-list"></div>
   </div>
 
+<!-- ════════════════════════════════════════════════════════════
+     SECTION 6 — ALGORITHM 9: HASH TABLE
+════════════════════════════════════════════════════════════ -->
+<div class="section-heading">Algorithm Analysis — Hash Table</div>
 
+<div class="card" style="margin-bottom:16px">
+  <div class="card-title">
+    Player Lookup
+    <span class="algo-tag">Alg 8 · Hash Table (Chaining)</span>
+  </div>
+  <p style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-bottom:10px;line-height:1.6">
+    Player IDs are hashed using djb2 into one of 16 buckets. Collisions are resolved via chaining. Each stat update is O(1) average. The grid below shows all 16 buckets live.
+  </p>
+  <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+    <input id="hash-input" class="algo-input" type="text" placeholder="Player ID  e.g. ind_rohit" style="margin:0">
+    <button class="btn" onclick="runHashLookup()">Lookup</button>
+  </div>
+  <div class="algo-result" id="hash-result">Enter a player ID and click Lookup.</div>
+</div>
   <!-- ════════════════════════════════════════════════════════════
        SECTION 4 — ALGORITHM 10: INTERVAL TREE
   ════════════════════════════════════════════════════════════ -->
@@ -251,7 +268,7 @@
   <div class="card" style="margin-bottom:16px">
     <div class="card-title">
       Who Was Batting? (Stabbing Query)
-      <span class="algo-tag">Alg 10 · Interval Tree</span>
+      <span class="algo-tag">Alg 9 · Interval Tree</span>
     </div>
     <p style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-bottom:10px;line-height:1.6">
       Each batsman's spell is stored as an interval [entry over, dismissal over] in an augmented BST. To answer "who was batting at over X?", the tree prunes entire branches using the stored <em>maxEnd</em> value — no need to check every spell. Complexity: O(log n + k).
@@ -272,7 +289,7 @@
   <div class="card" style="margin-bottom:16px">
     <div class="card-title">
       Top Scorers
-      <span class="algo-tag">Alg 8 · AVL Self-Balancing BST</span>
+      <span class="algo-tag">Alg 10 · AVL Self-Balancing BST</span>
     </div>
     <p style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-bottom:12px;line-height:1.6">
       Every stat update inserts the player's new score into the AVL tree in O(log n). The tree auto-balances using rotations, keeping in-order traversal always sorted. No re-sort needed after each ball.
